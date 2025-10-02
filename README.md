@@ -12,7 +12,7 @@ A simple, well-structured API for booking pitches in stadiums, built with Larave
 
 1.  **Clone the Repository**
     ```bash
-    git clone <your-repo-url>
+    git clone https://github.com/MohammedEl-Saeed/SafasoftTask.git
     cd stadium-booking-api
     ```
 
