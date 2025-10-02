@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class GetSlotsRequest extends FormRequest
+class GetSlotsRequest extends BaseApiRequest
 {
     public function authorize(): bool
     {

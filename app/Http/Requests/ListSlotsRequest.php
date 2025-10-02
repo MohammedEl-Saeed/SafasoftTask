@@ -3,7 +3,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ListSlotsRequest extends FormRequest
+class ListSlotsRequest extends BaseApiRequest
 {
     public function authorize(): bool { return true; }
 

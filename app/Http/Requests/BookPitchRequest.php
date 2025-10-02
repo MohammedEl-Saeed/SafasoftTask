@@ -5,7 +5,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 use Carbon\Carbon;
 
-class BookPitchRequest extends FormRequest
+class BookPitchRequest extends BaseApiRequest
 {
     public function authorize(): bool { return true; }
 

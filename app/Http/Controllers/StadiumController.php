@@ -8,11 +8,11 @@ class StadiumController extends Controller
 {
     public function index()
     {
-        return Stadium::all();
+        return response()->json(['stadiums' => Stadium::all()]);
     }
 
     public function pitches(Stadium $stadium)
     {
-        return $stadium->pitches;
+        return response()->json(['pitches' => $stadium->pitches]);
     }
 }
