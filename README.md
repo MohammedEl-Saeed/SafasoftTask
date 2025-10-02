@@ -43,7 +43,7 @@ A simple, well-structured API for booking pitches in stadiums, built with Larave
       ```bash
       php artisan serve
       ```
-    - The API will be available at `http://127.0.0.1:8000`.
+    - The API will be available at `http://127.0.0.1:8000/ui/slots`.
     - A simple UI for testing is available at the root URL (`/`).
 
 ## API Endpoints
