@@ -17,34 +17,40 @@ class BookingService
 
     public function getAvailableSlots(int $pitchId, string $date, int $duration): Collection
     {
-        $bookings = $this->repo->getBookingsForPitchByDate($pitchId, $date);
+        // Fetch bookings already sorted by start time from the repository.
+        $bookings = $this->repo->getBookingsForPitchByDate($pitchId, $date)
+            ->sortBy('start_at');
+
         $slots = collect();
 
-        $opening = Carbon::parse("{$date} 08:00:00");
+        // Start with the first available time, which is the opening time.
+        $currentTime = Carbon::parse("{$date} 08:00:00");
         $closing = Carbon::parse("{$date} 22:00:00");
 
-        while ($opening->lt($closing)) {
-            $start = $opening->copy();
-            $end   = $start->copy()->addMinutes($duration);
+        // Add a "dummy" booking at the end of the day to simplify the loop.
+        // This ensures the time from the last real booking until closing is also processed.
+        $bookings->push((object)[
+            'start_at' => $closing->copy(),
+            'end_at' => $closing->copy(),
+        ]);
 
-            if ($end->gt($closing)) break;
+        foreach ($bookings as $booking) {
+            // The "free block" is the time between our current time and the start of the next booking.
+            $freeBlockEnd = Carbon::parse($booking->start_at);
 
-            // Check conflict
-            $conflict = $bookings->first(function ($booking) use ($start, $end) {
-                $bookingStart = Carbon::parse($booking->start_at);
-                $bookingEnd   = Carbon::parse($booking->end_at);
-
-                return $start->lt($bookingEnd) && $end->gt($bookingStart);
-            });
-
-            if (! $conflict) {
+            // Generate all possible slots within this free block.
+            while ($currentTime->copy()->addMinutes($duration)->lte($freeBlockEnd)) {
                 $slots->push([
-                    'start_time' => $start->format('H:i'),
-                    'end_time'   => $end->format('H:i'),
+                    'start_time' => $currentTime->format('H:i'),
+                    'end_time'   => $currentTime->copy()->addMinutes($duration)->format('H:i'),
                 ]);
+                $currentTime->addMinutes($duration);
             }
 
-            $opening->addMinutes($duration);
+            // After a booking, the next possible start time is the end of that booking.
+            // We take the max to handle cases of overlapping or back-to-back bookings.
+            $nextAvailableTime = Carbon::parse($booking->end_at);
+            $currentTime = $currentTime->max($nextAvailableTime);
         }
 
         return $slots;
